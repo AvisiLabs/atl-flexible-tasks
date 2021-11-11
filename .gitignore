@@ -5,15 +5,9 @@
 build
 out
 
+# Ignore IDEA files
 .idea
 *.iml
+
+
 .DS_Store
-
-# Structurizr
-docs/logs
-docs/images
-docs/graphviz
-docs/workspace.json
-
-# Temp folders
-**/tmp/*
