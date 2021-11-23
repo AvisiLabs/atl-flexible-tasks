@@ -7,6 +7,7 @@ import nl.avisi.atl.flexible.tasks.orchestrator.models.tasks.TaskArtefact
 import nl.avisi.atl.flexible.tasks.orchestrator.models.tasks.TaskStatus
 import nl.avisi.atl.flexible.tasks.orchestrator.service.drink.DrinkService
 import nl.avisi.atl.flexible.tasks.orchestrator.service.task.TaskService
+import nl.avisi.atl.flexible.tasks.orchestrator.tasks.Task
 import org.springframework.stereotype.Service
 
 @Service
@@ -69,21 +70,25 @@ class OrchestratorService(
     ) {
         val nextTasksWithInputs = taskService.getNextTasksWithInputArtefacts(drinkId, type, statuses)
 
-        val taskCompletionFunctions = nextTasksWithInputs.map { (task, inputs) ->
-            taskService.startTask(drinkId, task.taskId)
-            try {
-                val outputArtefacts = task.callTask(
-                    drinkId = drinkId,
-                    inputData = inputs
-                )
-                val b = { processNewArtefacts(task.taskId, drinkId, type, outputArtefacts) }
-                b
-            } catch (e: Exception) {
-                val b = { processFailedTask(task.taskId, type, drinkId) }
-                b
-            }
-        }
+        nextTasksWithInputs.forEach { (task, _) -> taskService.startTask(drinkId, task.taskId) }
 
-        taskCompletionFunctions.forEach { it.invoke() }
+        nextTasksWithInputs.forEach { (task, inputs) ->
+            executeTask(task, drinkId, type, inputs)
+        }
+    }
+
+    private fun executeTask(
+        task: Task,
+        drinkId: String,
+        type: DrinkType,
+        inputs: List<TaskArtefact>
+    ) = try {
+        val outputArtefacts = task.callTask(
+            drinkId = drinkId,
+            inputData = inputs
+        )
+        processNewArtefacts(task.taskId, drinkId, type, outputArtefacts)
+    } catch (e: Exception) {
+        processFailedTask(task.taskId, type, drinkId)
     }
 }

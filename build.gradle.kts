@@ -28,7 +28,7 @@ dependencies {
         exclude("org.springframework.boot", "spring-boot-starter-tomcat")
     }
 
-    implementation("io.github.microutils:kotlin-logging-jvm:2.0.11")
+    implementation("io.github.microutils:kotlin-logging-jvm:2.1.0")
 }
 
 tasks.compileKotlin {

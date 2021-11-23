@@ -13,4 +13,4 @@
 
 * Send a POST request to `localhost:1337`, containing a request body with two fields:
   * `drinkId`: a string that identifies your drink
-  * `type`: either `BEER` or `WINE`, the type of drink you want
+  * `type`: the type of drink you want, either `BEER` or `WINE`
